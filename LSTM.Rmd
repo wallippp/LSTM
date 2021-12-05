@@ -1,0 +1,242 @@
+---
+jupyter:
+  jupytext:
+    text_representation:
+      extension: .Rmd
+      format_name: rmarkdown
+      format_version: '1.2'
+      jupytext_version: 1.13.0
+  kernelspec:
+    display_name: Python 3
+    language: python
+    name: python3
+---
+
+```{python colab={'base_uri': 'https://localhost:8080/'}, executionInfo={'elapsed': 25026, 'status': 'ok', 'timestamp': 1631726189030, 'user': {'displayName': 'Sorratat Sirirattanajakarin', 'photoUrl': 'https://lh3.googleusercontent.com/a-/AOh14GgrWNks675XGqTiWnAqgrAinQZUcDbuIP0Y8IUwOg=s64', 'userId': '12733876679428886078'}, 'user_tz': -420}, id="RhS-VRo_dT4o", outputId="8c6f6daf-438d-498b-a664-340a429871b8"}
+from google.colab import drive
+drive.mount('/content/drive')
+```
+
+```{python id="d3ZRdjpCdUcP"}
+import tensorflow as tf
+```
+
+```{python colab={'base_uri': 'https://localhost:8080/'}, executionInfo={'elapsed': 4, 'status': 'ok', 'timestamp': 1631726338471, 'user': {'displayName': 'Sorratat Sirirattanajakarin', 'photoUrl': 'https://lh3.googleusercontent.com/a-/AOh14GgrWNks675XGqTiWnAqgrAinQZUcDbuIP0Y8IUwOg=s64', 'userId': '12733876679428886078'}, 'user_tz': -420}, id="ubcJsY2NdaB7", outputId="2675dc36-c040-42a3-bdf6-9fa86573e33a"}
+# %matplotlib inline
+
+
+import os
+import re
+import time
+import numpy as np
+import pandas as pd
+pd.set_option('display.max_colwidth', None)
+import itertools
+import pickle
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+
+from tqdm.auto import tqdm
+from sklearn.utils import shuffle
+from sklearn.model_selection import train_test_split
+
+print([tf.__version__, tf.test.is_gpu_available()])
+```
+
+```{python id="C_UcfOlLdcC9"}
+import time
+import numpy as np
+import pandas as pd
+import itertools
+import pickle
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+
+from tqdm.auto import tqdm
+from sklearn.utils import shuffle
+from sklearn.model_selection import train_test_split
+df = pd.read_excel("D:/electric228.xlsx", header=None)
+```
+
+```{python colab={'base_uri': 'https://localhost:8080/', 'height': 143}, executionInfo={'elapsed': 2, 'status': 'ok', 'timestamp': 1631726310581, 'user': {'displayName': 'Sorratat Sirirattanajakarin', 'photoUrl': 'https://lh3.googleusercontent.com/a-/AOh14GgrWNks675XGqTiWnAqgrAinQZUcDbuIP0Y8IUwOg=s64', 'userId': '12733876679428886078'}, 'user_tz': -420}, id="cgaU2HF7dcA8", outputId="2f913efa-7245-4021-a79d-9367647b6094"}
+df[:10]
+```
+
+```{python id="jVSDCOeAjtIE"}
+from sklearn.preprocessing import MinMaxScaler, StandardScaler
+```
+
+```{python id="NY62MpcJjtVO"}
+
+```
+
+```{python id="I7b5M22YjtXc"}
+df.info()
+```
+
+```{python colab={'base_uri': 'https://localhost:8080/', 'height': 283}, executionInfo={'elapsed': 5, 'status': 'ok', 'timestamp': 1631726363390, 'user': {'displayName': 'Sorratat Sirirattanajakarin', 'photoUrl': 'https://lh3.googleusercontent.com/a-/AOh14GgrWNks675XGqTiWnAqgrAinQZUcDbuIP0Y8IUwOg=s64', 'userId': '12733876679428886078'}, 'user_tz': -420}, id="mumasyH4db-6", outputId="84070d6a-853e-44ce-8e5b-5222d438cf9a"}
+df[0].plot()
+```
+
+```{python id="5Hffby1idb8u"}
+raw_ts = df[0].tolist()
+raw_ts
+```
+
+```{python colab={'base_uri': 'https://localhost:8080/'}, executionInfo={'elapsed': 495, 'status': 'ok', 'timestamp': 1631726432236, 'user': {'displayName': 'Sorratat Sirirattanajakarin', 'photoUrl': 'https://lh3.googleusercontent.com/a-/AOh14GgrWNks675XGqTiWnAqgrAinQZUcDbuIP0Y8IUwOg=s64', 'userId': '12733876679428886078'}, 'user_tz': -420}, id="aacjYF3_eKRD", outputId="6408151a-f6c3-48c9-d0ad-6f4566cd4de6"}
+raw_ts[:5]
+```
+
+```{python id="cc0PIugMeKO5"}
+new_ts = []
+label = []
+
+for idx in range(0, len(raw_ts)-6, 1):
+    new_ts.append(raw_ts[idx:idx+5])
+    label.append(raw_ts[idx+1:idx+2])
+```
+
+```{python colab={'base_uri': 'https://localhost:8080/'}, executionInfo={'elapsed': 3, 'status': 'ok', 'timestamp': 1631726654026, 'user': {'displayName': 'Sorratat Sirirattanajakarin', 'photoUrl': 'https://lh3.googleusercontent.com/a-/AOh14GgrWNks675XGqTiWnAqgrAinQZUcDbuIP0Y8IUwOg=s64', 'userId': '12733876679428886078'}, 'user_tz': -420}, id="maE1jtrxeKNB", outputId="26c239b8-08a5-4586-9642-ef13d4f13d58"}
+#show lag 6 columns
+new_ts[:6]
+```
+
+```{python colab={'base_uri': 'https://localhost:8080/'}, executionInfo={'elapsed': 3, 'status': 'ok', 'timestamp': 1631726727561, 'user': {'displayName': 'Sorratat Sirirattanajakarin', 'photoUrl': 'https://lh3.googleusercontent.com/a-/AOh14GgrWNks675XGqTiWnAqgrAinQZUcDbuIP0Y8IUwOg=s64', 'userId': '12733876679428886078'}, 'user_tz': -420}, id="DKeQxCQVeKK9", outputId="aaf6d98f-dd42-4e51-85fa-d59e4e6a69d0"}
+# show y_train 5 values
+label[:5]
+```
+
+```{python id="L3hKMfT8kQ-K"}
+X_arr = np.array(new_ts)
+Y_arr = np.array(label)
+X_arr
+```
+
+```{python id="lTinyDP2kONP"}
+# rescaling
+from sklearn.preprocessing import MinMaxScaler, StandardScaler
+norm = MinMaxScaler()
+stand = StandardScaler()
+X_arr_norm = norm.fit_transform(X_arr)
+X_arr_stand = stand.fit_transform(X_arr_norm)
+
+
+norm = MinMaxScaler()
+stand = StandardScaler()
+Y_arr_norm = norm.fit_transform(Y_arr)
+Y_arr_stand = stand.fit_transform(Y_arr_norm)
+Y_arr_stand
+len(Y_arr_stand)
+```
+
+```{python id="INzINaswfPGF"}
+X_arr_3dim = np.array(X_arr_stand).reshape((224, 3, 1))
+Y_arr_new = np.array(Y_arr_stand)
+X_arr_3dim
+```
+
+```{python colab={'base_uri': 'https://localhost:8080/'}, executionInfo={'elapsed': 2, 'status': 'ok', 'timestamp': 1631728126677, 'user': {'displayName': 'Sorratat Sirirattanajakarin', 'photoUrl': 'https://lh3.googleusercontent.com/a-/AOh14GgrWNks675XGqTiWnAqgrAinQZUcDbuIP0Y8IUwOg=s64', 'userId': '12733876679428886078'}, 'user_tz': -420}, id="Y2nIaZnngUvH", outputId="76820bc3-be3e-475f-abc0-7ec506642416"}
+X_arr_3dim.shape, Y_arr_new.shape
+```
+
+```{python id="gPoQs_6VgUs0"}
+
+```
+
+```{python id="B4ZzYUlugUj0"}
+
+```
+
+```{python id="4Ej7vIQ_fO9Y"}
+
+```
+
+```{python id="0k0Q0KBCeKJD"}
+model = tf.keras.Sequential()
+# model.add(tf.keras.layers.Bidirectional(tf.keras.layers.LSTM(200, return_sequences=True, recurrent_dropout=0)))
+model.add(tf.keras.layers.LSTM(100, return_sequences=False, recurrent_dropout=0))
+model.add(tf.keras.layers.Dense(1))
+```
+
+```{python}
+model = tf.keras.Sequential()
+# model.add(tf.keras.layers.LSTM(100, return_sequences=True, recurrent_dropout=0))
+model.add(tf.keras.layers.LSTM(100, return_sequences=False, recurrent_dropout=0))
+model.add(tf.keras.layers.Dense(1))
+```
+
+```{python id="W4cLbyv7iGIy"}
+model.compile(optimizer=tf.keras.optimizers.SGD(
+    learning_rate=0.001, momentum=0.0, nesterov=False, name='SGD'
+), loss='mse')
+```
+
+```{python colab={'base_uri': 'https://localhost:8080/'}, executionInfo={'elapsed': 47989, 'status': 'ok', 'timestamp': 1631728960821, 'user': {'displayName': 'Sorratat Sirirattanajakarin', 'photoUrl': 'https://lh3.googleusercontent.com/a-/AOh14GgrWNks675XGqTiWnAqgrAinQZUcDbuIP0Y8IUwOg=s64', 'userId': '12733876679428886078'}, 'user_tz': -420}, id="3N0VZvMQeKHB", outputId="1c6bff4b-c2a7-4497-e839-1f251d501aed"}
+# Train the model
+history = model.fit(X_arr_3dim, Y_arr_new, batch_size=8, epochs=100, verbose=1, validation_split=0.2)
+```
+
+```{python colab={'base_uri': 'https://localhost:8080/'}, executionInfo={'elapsed': 15, 'status': 'ok', 'timestamp': 1631728960825, 'user': {'displayName': 'Sorratat Sirirattanajakarin', 'photoUrl': 'https://lh3.googleusercontent.com/a-/AOh14GgrWNks675XGqTiWnAqgrAinQZUcDbuIP0Y8IUwOg=s64', 'userId': '12733876679428886078'}, 'user_tz': -420}, id="8JQYTas9eKCA", outputId="e9c6f351-7bb4-4e6d-a270-cc52a3d63169"}
+print(history.history.keys())
+```
+
+```{python colab={'base_uri': 'https://localhost:8080/', 'height': 295}, executionInfo={'elapsed': 12, 'status': 'ok', 'timestamp': 1631728960826, 'user': {'displayName': 'Sorratat Sirirattanajakarin', 'photoUrl': 'https://lh3.googleusercontent.com/a-/AOh14GgrWNks675XGqTiWnAqgrAinQZUcDbuIP0Y8IUwOg=s64', 'userId': '12733876679428886078'}, 'user_tz': -420}, id="KhKeMQNIdb6L", outputId="2151879f-9152-4119-c7f3-1f14700e6ade"}
+plt.plot(history.history['loss'])
+plt.plot(history.history['val_loss'])  # RAISE ERROR
+plt.title('model accuracy')
+plt.ylabel('loss')
+plt.xlabel('epoch')
+plt.legend(['train', 'test'], loc='upper left')
+plt.show()
+```
+
+```{python id="nuFtO0mgmeJe"}
+# [1,2,3,4,5] => 6
+# [2,3,4,5,6] => 7
+# ..
+# .
+# .
+# .
+# [200,201,202,203,204] => 205
+```
+
+```{python id="Tbpb7loAmeH9"}
+Y_pred = model.predict(X_arr_3dim)
+```
+
+```{python colab={'base_uri': 'https://localhost:8080/'}, executionInfo={'elapsed': 7, 'status': 'ok', 'timestamp': 1631728961807, 'user': {'displayName': 'Sorratat Sirirattanajakarin', 'photoUrl': 'https://lh3.googleusercontent.com/a-/AOh14GgrWNks675XGqTiWnAqgrAinQZUcDbuIP0Y8IUwOg=s64', 'userId': '12733876679428886078'}, 'user_tz': -420}, id="UEBbfI-kmeF6", outputId="64e8d22d-e070-406a-c2af-7a4a0752ab18"}
+# show  y_fit top 3 values
+Y_pred[:3]
+# y = Y_pred.tolist()
+# y[0].insert(0,np.nan)
+# y[0].insert(0,np.nan)
+# y[0].insert(0,np.nan)
+```
+
+```{python colab={'base_uri': 'https://localhost:8080/', 'height': 265}, executionInfo={'elapsed': 6, 'status': 'ok', 'timestamp': 1631728961808, 'user': {'displayName': 'Sorratat Sirirattanajakarin', 'photoUrl': 'https://lh3.googleusercontent.com/a-/AOh14GgrWNks675XGqTiWnAqgrAinQZUcDbuIP0Y8IUwOg=s64', 'userId': '12733876679428886078'}, 'user_tz': -420}, id="0vwJl0l2momk", outputId="6a91ff6f-1907-4b68-dafb-fe23d799e080"}
+plt.plot(Y_arr_new)
+plt.plot(Y_pred)
+plt.legend(['true', 'pred'], loc='upper left')
+plt.show()
+```
+
+```{python id="6vymJvnAmeDG"}
+# inverst to true values
+inversed = stand.inverse_transform(Y_pred)
+inversed
+inv = norm.inverse_transform(inversed)
+inv
+r = pd.DataFrame(inv, columns=['fit 100dense 0drop'])
+r
+```
+
+```{python id="CRYQG9GqmeAX"}
+#export to csv
+r.to_csv('D:/fit_electic228_3_lag.csv',index = False, header=True)
+```
+
+```{python id="DLOMNno6dbZ_"}
+
+```
