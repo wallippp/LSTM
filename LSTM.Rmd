@@ -12,36 +12,8 @@ jupyter:
     name: python3
 ---
 
-```{python colab={'base_uri': 'https://localhost:8080/'}, executionInfo={'elapsed': 25026, 'status': 'ok', 'timestamp': 1631726189030, 'user': {'displayName': 'Sorratat Sirirattanajakarin', 'photoUrl': 'https://lh3.googleusercontent.com/a-/AOh14GgrWNks675XGqTiWnAqgrAinQZUcDbuIP0Y8IUwOg=s64', 'userId': '12733876679428886078'}, 'user_tz': -420}, id="RhS-VRo_dT4o", outputId="8c6f6daf-438d-498b-a664-340a429871b8"}
-from google.colab import drive
-drive.mount('/content/drive')
-```
-
 ```{python id="d3ZRdjpCdUcP"}
 import tensorflow as tf
-```
-
-```{python colab={'base_uri': 'https://localhost:8080/'}, executionInfo={'elapsed': 4, 'status': 'ok', 'timestamp': 1631726338471, 'user': {'displayName': 'Sorratat Sirirattanajakarin', 'photoUrl': 'https://lh3.googleusercontent.com/a-/AOh14GgrWNks675XGqTiWnAqgrAinQZUcDbuIP0Y8IUwOg=s64', 'userId': '12733876679428886078'}, 'user_tz': -420}, id="ubcJsY2NdaB7", outputId="2675dc36-c040-42a3-bdf6-9fa86573e33a"}
-# %matplotlib inline
-
-
-import os
-import re
-import time
-import numpy as np
-import pandas as pd
-pd.set_option('display.max_colwidth', None)
-import itertools
-import pickle
-import matplotlib.pyplot as plt
-import seaborn as sns
-
-
-from tqdm.auto import tqdm
-from sklearn.utils import shuffle
-from sklearn.model_selection import train_test_split
-
-print([tf.__version__, tf.test.is_gpu_available()])
 ```
 
 ```{python id="C_UcfOlLdcC9"}
@@ -192,16 +164,6 @@ plt.legend(['train', 'test'], loc='upper left')
 plt.show()
 ```
 
-```{python id="nuFtO0mgmeJe"}
-# [1,2,3,4,5] => 6
-# [2,3,4,5,6] => 7
-# ..
-# .
-# .
-# .
-# [200,201,202,203,204] => 205
-```
-
 ```{python id="Tbpb7loAmeH9"}
 Y_pred = model.predict(X_arr_3dim)
 ```
@@ -209,10 +171,6 @@ Y_pred = model.predict(X_arr_3dim)
 ```{python colab={'base_uri': 'https://localhost:8080/'}, executionInfo={'elapsed': 7, 'status': 'ok', 'timestamp': 1631728961807, 'user': {'displayName': 'Sorratat Sirirattanajakarin', 'photoUrl': 'https://lh3.googleusercontent.com/a-/AOh14GgrWNks675XGqTiWnAqgrAinQZUcDbuIP0Y8IUwOg=s64', 'userId': '12733876679428886078'}, 'user_tz': -420}, id="UEBbfI-kmeF6", outputId="64e8d22d-e070-406a-c2af-7a4a0752ab18"}
 # show  y_fit top 3 values
 Y_pred[:3]
-# y = Y_pred.tolist()
-# y[0].insert(0,np.nan)
-# y[0].insert(0,np.nan)
-# y[0].insert(0,np.nan)
 ```
 
 ```{python colab={'base_uri': 'https://localhost:8080/', 'height': 265}, executionInfo={'elapsed': 6, 'status': 'ok', 'timestamp': 1631728961808, 'user': {'displayName': 'Sorratat Sirirattanajakarin', 'photoUrl': 'https://lh3.googleusercontent.com/a-/AOh14GgrWNks675XGqTiWnAqgrAinQZUcDbuIP0Y8IUwOg=s64', 'userId': '12733876679428886078'}, 'user_tz': -420}, id="0vwJl0l2momk", outputId="6a91ff6f-1907-4b68-dafb-fe23d799e080"}
